@@ -170,7 +170,8 @@ public class FaceSentimentDetectApp {
    * Positive sentiments: joy
    * Negative sentiments: sorrow, anger
    * Neutral sentiments: surprise
-   * Hint: Possible likelihoods: LIKELY, VERY_LIKELY, UNLIKELY, VERY_UNLIKELY
+   * Hint: Possible likelihoods: LIKELY, VERY_LIKELY, UNLIKELY, VERY_UNLIKELY,
+   *       POSSIBLE, UNKNOWN
    * @param face
    * @return
    */
