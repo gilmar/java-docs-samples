@@ -45,7 +45,7 @@ import com.google.common.collect.Lists;
 // [END import_libraries]
 
 /**
- * A sample application that uses the Vision API to verify the predominant color of a picture 
+ * A sample application that uses the Vision API to verify the dominant color of a picture 
  */
 public class ColorApp {
   /**
@@ -114,14 +114,13 @@ public class ColorApp {
 	}
   
 	/**
-	 * Prints the received properties from the Vision API.
+	 * Prints the properties received from the Vision API.
 	 * 
 	 * @throws IOException
 	 */
 	public static void printProperties(PrintStream out, Path imagePath, ImageProperties properties)
 			throws IOException {
-		out.printf("Properties for image %s:\n", imagePath);
-		out.printf("\t Properties: %s", properties.toPrettyString());
+		out.printf("Properties for image %s:\n %s", imagePath, properties.toPrettyString());
 		if (properties.isEmpty()) {
 			out.println("\tNo properties found.");
 		}
@@ -152,15 +151,17 @@ public class ColorApp {
   }
 
   /**
-   * Gets up to {@code maxResults} properties for an image stored at {@code path}.
+   * Gets properties for an image stored at {@code path}.
    */
   public ImageProperties getImageProperties(Path path) throws IOException {
 		byte[] data = Files.readAllBytes(path);
 
-		AnnotateImageRequest request = new AnnotateImageRequest().setImage(new Image().encodeContent(data))
+		AnnotateImageRequest request = new AnnotateImageRequest()
+				.setImage(new Image().encodeContent(data))
 				.setFeatures(ImmutableList.of(new Feature().setType("IMAGE_PROPERTIES")));
 		Vision.Images.Annotate annotate = vision.images()
-				.annotate(new BatchAnnotateImagesRequest().setRequests(ImmutableList.of(request)));
+				.annotate(new BatchAnnotateImagesRequest()
+				.setRequests(ImmutableList.of(request)));
 
 		// [START parse_response]
 		BatchAnnotateImagesResponse batchResponse = annotate.execute();
