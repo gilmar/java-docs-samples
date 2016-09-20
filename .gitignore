@@ -48,3 +48,7 @@ tags
 
 # Gradle
 out/
+
+*/bin/*
+bin/
+bin/*

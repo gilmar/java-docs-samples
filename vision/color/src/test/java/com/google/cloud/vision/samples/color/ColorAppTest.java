@@ -39,14 +39,14 @@ public class ColorAppTest {
 	}
 
 	@Test
-	public void goodAppleShoudReturnRed() throws Exception {
-		String predominantColor = appUnderTest.getPredominantColor(Paths.get("data/apple_good.jpg"));
-		assertThat(predominantColor).isEqualTo("red");
+	public void goodMangoShoudReturnRedOrYellow() throws Exception {
+		String predominantColor = appUnderTest.getDominantColor(Paths.get("data/good_mango.jpg"));
+		assertThat(predominantColor).isAnyOf("red", "yellow");
 	}
-
+	
 	@Test
-	public void rottenAppleShoudReturnYellow() throws Exception {
-		String predominantColor = appUnderTest.getPredominantColor(Paths.get("data/apple_rotten.jpg"));
-		assertThat(predominantColor).isEqualTo("yellow");
+	public void immatureMangoShoudReturnGreen() throws Exception {
+		String predominantColor = appUnderTest.getDominantColor(Paths.get("data/green_mango.jpg"));
+		assertThat(predominantColor).isEqualTo("green");
 	}
 }

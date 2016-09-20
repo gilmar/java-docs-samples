@@ -16,6 +16,13 @@
 
 package com.google.cloud.vision.samples.color;
 
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
+
 // [START import_libraries]
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -27,18 +34,14 @@ import com.google.api.services.vision.v1.model.AnnotateImageRequest;
 import com.google.api.services.vision.v1.model.AnnotateImageResponse;
 import com.google.api.services.vision.v1.model.BatchAnnotateImagesRequest;
 import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
-import com.google.api.services.vision.v1.model.EntityAnnotation;
+import com.google.api.services.vision.v1.model.Color;
+import com.google.api.services.vision.v1.model.ColorInfo;
+import com.google.api.services.vision.v1.model.DominantColorsAnnotation;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
+import com.google.api.services.vision.v1.model.ImageProperties;
 import com.google.common.collect.ImmutableList;
-
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
-import java.util.List;
+import com.google.common.collect.Lists;
 // [END import_libraries]
 
 /**
@@ -68,16 +71,61 @@ public class ColorApp {
     printProperties(System.out, imagePath, app.getImageProperties(imagePath));
   }
 
-  public String getPredominantColor(Path imagePath) {
-	  return null;
+	private float rgbDistance(Color c1, Color c2) {
+		return (float) Math.sqrt((Math.abs(Math.pow(c1.getRed() - c2.getRed(), 2)) 
+				+ Math.abs(Math.pow(c1.getGreen() - c2.getGreen(), 2))
+				+ Math.abs(Math.pow(c1.getBlue() - c2.getBlue(), 2))));
+	}
+  
+  private String closestColorName(Color c) {
+	  Color red = new Color();
+	  red.setRed(255.0f);
+	  red.setGreen(0.0f);
+	  red.setBlue(0.0f);
+	  red.set("name", "red");
+	  Color yellow = new Color();
+	  yellow.setRed(255.0f);
+	  yellow.setGreen(255.0f);
+	  yellow.setBlue(0.0f);
+	  yellow.set("name", "yellow");
+	  Color green = new Color();
+	  green.setRed(0.0f);
+	  green.setGreen(255.0f);
+	  green.setBlue(0.0f);
+	  green.set("name", "green");
+	  java.util.List<Color> referenceColors = Lists.newArrayList(red, yellow, green);
+	  float minDistance = rgbDistance(red, c);
+	  String closestColorName = (String) red.get("name");
+	  for (Color ref : referenceColors) {
+		  float distance = rgbDistance(ref, c);
+		  if (distance <= minDistance) {
+			  minDistance = distance;
+			  closestColorName = (String) ref.get("name");
+		  }
+	  }
+	  return closestColorName;
   }
   
-  /**
-   * Prints the  received from the Vision API.
-   */
-  public static void printProperties(PrintStream out, Path imagePath, List<EntityAnnotation> properties) {
-	  //TODO
-  }
+	public String getDominantColor(Path imagePath) throws IOException, GeneralSecurityException {
+		ImageProperties properties = getImageProperties(imagePath);
+		DominantColorsAnnotation dominantColorsAnnotation = properties.getDominantColors();
+		ColorInfo colorInfo = dominantColorsAnnotation.getColors().get(0);
+		return this.closestColorName(colorInfo.getColor());
+	}
+  
+	/**
+	 * Prints the received properties from the Vision API.
+	 * 
+	 * @throws IOException
+	 */
+	public static void printProperties(PrintStream out, Path imagePath, ImageProperties properties)
+			throws IOException {
+		out.printf("Properties for image %s:\n", imagePath);
+		out.printf("\t Properties: %s", properties.toPrettyString());
+		if (properties.isEmpty()) {
+			out.println("\tNo properties found.");
+		}
+	}
   // [END run_application]
 
   // [START authenticate]
@@ -106,14 +154,23 @@ public class ColorApp {
   /**
    * Gets up to {@code maxResults} properties for an image stored at {@code path}.
    */
-  public List<EntityAnnotation> getImageProperties(Path path) throws IOException {
-    // [START construct_request]
-	//TODO
-    // [END construct_request]
+  public ImageProperties getImageProperties(Path path) throws IOException {
+		byte[] data = Files.readAllBytes(path);
 
-    // [START parse_response]
-	//TODO
-    // [END parse_response]
-    return null;
+		AnnotateImageRequest request = new AnnotateImageRequest().setImage(new Image().encodeContent(data))
+				.setFeatures(ImmutableList.of(new Feature().setType("IMAGE_PROPERTIES")));
+		Vision.Images.Annotate annotate = vision.images()
+				.annotate(new BatchAnnotateImagesRequest().setRequests(ImmutableList.of(request)));
+
+		// [START parse_response]
+		BatchAnnotateImagesResponse batchResponse = annotate.execute();
+		assert batchResponse.getResponses().size() == 1;
+		AnnotateImageResponse response = batchResponse.getResponses().get(0);
+		if (response.getImagePropertiesAnnotation() == null) {
+			throw new IOException(response.getError() != null ? response.getError().getMessage()
+					: "Unknown error getting image annotations");
+		}
+		return response.getImagePropertiesAnnotation();
+		// [END parse_response]
   }
 }
