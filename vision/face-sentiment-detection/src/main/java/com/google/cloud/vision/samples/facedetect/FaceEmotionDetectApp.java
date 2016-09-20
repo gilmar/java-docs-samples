@@ -174,17 +174,8 @@ public class FaceEmotionDetectApp {
    * @return
    */
   public static String getSentiment(FaceAnnotation face) {
-		List<String> ratings = Lists.newArrayList("LIKELY", "VERY_LIKELY");
-		if (ratings.contains(face.getJoyLikelihood())) {
-			return "positive";
-		} else if (ratings.contains(face.getSorrowLikelihood())) {
-			return "negative";
-		} else if (ratings.contains(face.getAngerLikelihood())) {
-			return "negative";
-		} else if (ratings.contains(face.getSurpriseLikelihood())) {
-			return "neutral";
-		}
-		return "neutral";
+  	// TODO
+  	return null;
   }
   
   
