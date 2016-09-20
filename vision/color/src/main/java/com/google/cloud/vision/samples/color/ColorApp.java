@@ -72,9 +72,9 @@ public class ColorApp {
   }
 
 	private float rgbDistance(Color c1, Color c2) {
-		return (float) Math.sqrt((Math.abs(Math.pow(c1.getRed() - c2.getRed(), 2)) 
-				+ Math.abs(Math.pow(c1.getGreen() - c2.getGreen(), 2))
-				+ Math.abs(Math.pow(c1.getBlue() - c2.getBlue(), 2))));
+		return (float) Math.sqrt(
+				(Math.abs(Math.pow(c1.getRed() - c2.getRed(), 2)) + Math.abs(Math.pow(c1.getGreen() - c2.getGreen(), 2))
+						+ Math.abs(Math.pow(c1.getBlue() - c2.getBlue(), 2))));
 	}
   
   private String closestColorName(Color c) {
@@ -107,10 +107,8 @@ public class ColorApp {
   }
   
 	public String getDominantColor(Path imagePath) throws IOException, GeneralSecurityException {
-		ImageProperties properties = getImageProperties(imagePath);
-		DominantColorsAnnotation dominantColorsAnnotation = properties.getDominantColors();
-		ColorInfo colorInfo = dominantColorsAnnotation.getColors().get(0);
-		return this.closestColorName(colorInfo.getColor());
+		//TODO
+		return  null;
 	}
   
 	/**
@@ -154,24 +152,7 @@ public class ColorApp {
    * Gets properties for an image stored at {@code path}.
    */
   public ImageProperties getImageProperties(Path path) throws IOException {
-		byte[] data = Files.readAllBytes(path);
-
-		AnnotateImageRequest request = new AnnotateImageRequest()
-				.setImage(new Image().encodeContent(data))
-				.setFeatures(ImmutableList.of(new Feature().setType("IMAGE_PROPERTIES")));
-		Vision.Images.Annotate annotate = vision.images()
-				.annotate(new BatchAnnotateImagesRequest()
-				.setRequests(ImmutableList.of(request)));
-
-		// [START parse_response]
-		BatchAnnotateImagesResponse batchResponse = annotate.execute();
-		assert batchResponse.getResponses().size() == 1;
-		AnnotateImageResponse response = batchResponse.getResponses().get(0);
-		if (response.getImagePropertiesAnnotation() == null) {
-			throw new IOException(response.getError() != null ? response.getError().getMessage()
-					: "Unknown error getting image annotations");
-		}
-		return response.getImagePropertiesAnnotation();
-		// [END parse_response]
+		// TODO
+		return null;
   }
 }
