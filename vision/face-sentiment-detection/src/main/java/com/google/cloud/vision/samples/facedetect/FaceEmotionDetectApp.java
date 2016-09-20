@@ -32,6 +32,7 @@ import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
 import com.google.api.services.vision.v1.model.Vertex;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -154,6 +155,7 @@ public class FaceEmotionDetectApp {
     ImageIO.write(img, "jpg", outputPath.toFile());
   }
 
+  
   /**
    * Annotates an image {@code img} with a polygon around each face in {@code faces}.
    */
@@ -164,16 +166,49 @@ public class FaceEmotionDetectApp {
   }
 
   /**
+   * Sentiments can be positive, neutral or negative
+   * Positive sentiments: joy
+   * Negative sentiments: sorrow, anger
+   * Neutral sentiments: surprise
+   * @param face
+   * @return
+   */
+  public static String getSentiment(FaceAnnotation face) {
+		List<String> ratings = Lists.newArrayList("LIKELY", "VERY_LIKELY");
+		if (ratings.contains(face.getJoyLikelihood())) {
+			return "positive";
+		} else if (ratings.contains(face.getSorrowLikelihood())) {
+			return "negative";
+		} else if (ratings.contains(face.getAngerLikelihood())) {
+			return "negative";
+		} else if (ratings.contains(face.getSurpriseLikelihood())) {
+			return "neutral";
+		}
+		return "neutral";
+  }
+  
+  
+  
+  /**
    * Annotates an image {@code img} with a polygon defined by {@code face}.
    */
   private static void annotateWithFace(BufferedImage img, FaceAnnotation face) {
-    Graphics2D gfx = img.createGraphics();
+    Color color = new Color(0xffffff);
+    String sentiment = getSentiment(face);
+    if (sentiment.equals("positive")) {
+    	color = new Color(0x00ff00);
+    } else if (sentiment.equals("negative")) {
+    	color = new Color(0xff0000);
+    } else if (sentiment.equals("neutral")) {
+    	color = new Color(0xd3d3d3);
+    }
+	  Graphics2D gfx = img.createGraphics();
     Polygon poly = new Polygon();
     for (Vertex vertex : face.getFdBoundingPoly().getVertices()) {
       poly.addPoint(vertex.getX(), vertex.getY());
     }
     gfx.setStroke(new BasicStroke(5));
-    gfx.setColor(new Color(0x00ff00));
+    gfx.setColor(color);
     gfx.draw(poly);
   }
   // [END highlight_faces]
