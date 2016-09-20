@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.cloud.vision.samples.facedetect;
+package com.google.cloud.vision.samples.facesentimentdetect;
 
 // [BEGIN import_libraries]
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -52,7 +52,7 @@ import javax.imageio.ImageIO;
 /**
  * A sample application that uses the Vision API to detect people emotions in an image.
  */
-public class FaceEmotionDetectApp {
+public class FaceSentimentDetectApp {
   /**
    * Be sure to specify the name of your application. If the application name is {@code null} or
    * blank, the application will log a warning. Suggested format is "MyCompany-ProductName/1.0".
@@ -70,7 +70,7 @@ public class FaceEmotionDetectApp {
       System.err.println("Usage:");
       System.err.printf(
           "\tjava %s inputImagePath outputImagePath\n",
-          FaceEmotionDetectApp.class.getCanonicalName());
+          FaceSentimentDetectApp.class.getCanonicalName());
       System.exit(1);
     }
     Path inputPath = Paths.get(args[0]);
@@ -80,11 +80,11 @@ public class FaceEmotionDetectApp {
       System.exit(1);
     }
 
-    FaceEmotionDetectApp app = new FaceEmotionDetectApp(getVisionService());
+    FaceSentimentDetectApp app = new FaceSentimentDetectApp(getVisionService());
     List<FaceAnnotation> faces = app.detectFaces(inputPath, MAX_RESULTS);
     System.out.printf("Found %d face%s\n", faces.size(), faces.size() == 1 ? "" : "s");
     System.out.printf("Writing to file %s\n", outputPath);
-    FaceEmotionDetectApp.writeWithFaces(inputPath, outputPath, faces);
+    FaceSentimentDetectApp.writeWithFaces(inputPath, outputPath, faces);
   }
   // [END main]
 
@@ -105,9 +105,9 @@ public class FaceEmotionDetectApp {
   private final Vision vision;
 
   /**
-   * Constructs a {@link FaceEmotionDetectApp} which connects to the Vision API.
+   * Constructs a {@link FaceSentimentDetectApp} which connects to the Vision API.
    */
-  public FaceEmotionDetectApp(Vision vision) {
+  public FaceSentimentDetectApp(Vision vision) {
     this.vision = vision;
   }
 

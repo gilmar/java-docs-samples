@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.cloud.vision.samples.facedetect;
+package com.google.cloud.vision.samples.facesentimentdetect;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -27,21 +27,22 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.google.api.services.vision.v1.model.FaceAnnotation;
+import com.google.cloud.vision.samples.facesentimentdetect.FaceSentimentDetectApp;
 import com.google.common.collect.Lists;
 
 /**
- * Integration (system) tests for {@link FaceEmotionDetectApp}.
+ * Integration (system) tests for {@link FaceSentimentDetectApp}.
  */
 @RunWith(JUnit4.class)
 @SuppressWarnings("checkstyle:abbreviationaswordinname")
 public class FaceSentimentDetectTest {
 	private static final int MAX_RESULTS = 6;
 
-	private FaceEmotionDetectApp appUnderTest;
+	private FaceSentimentDetectApp appUnderTest;
 
 	@Before
 	public void setUp() throws Exception {
-		appUnderTest = new FaceEmotionDetectApp(FaceEmotionDetectApp.getVisionService());
+		appUnderTest = new FaceSentimentDetectApp(FaceSentimentDetectApp.getVisionService());
 	}
 
 	@Test
